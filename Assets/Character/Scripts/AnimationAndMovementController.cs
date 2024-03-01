@@ -11,14 +11,20 @@ public class AnimationAndMovementController : MonoBehaviour
     
     private Vector2 currentMovementInput;
     private Vector2 currentMovement;
+    
+    private int isRunningHash;
+    private int isRunningBackHash;
 
-    private bool isMovementPressed = false;
-    // Start is called before the first frame update
+    private bool isMovementPressed;
+    private bool isMovementBack;
     private void Awake()
     {
         _playerInput = new PlayerInput();
         _characterController = GetComponent<CharacterController>();
         _animator = GetComponent<Animator>();
+        
+        isRunningHash = Animator.StringToHash("isRunning");
+        isRunningBackHash = Animator.StringToHash("isRunningBack");
         
         _playerInput.CharacterController.Move.started += onMovementInput;
         _playerInput.CharacterController.Move.canceled += onMovementInput;
@@ -31,11 +37,33 @@ public class AnimationAndMovementController : MonoBehaviour
         currentMovementInput = context.ReadValue<Vector2>();
         currentMovement.x = currentMovementInput.x;
         isMovementPressed = currentMovementInput.x != 0;
+        isMovementBack = currentMovement.x < 0;
+        
     }
+    
+    void handleAnimation()
+    {
+        bool isRunning = _animator.GetBool(isRunningHash);
+        bool isRunningBack = _animator.GetBool(isRunningBackHash);
 
-    // Update is called once per frame
+        if (isMovementPressed && !isMovementBack)
+        {
+            _animator.SetBool(isRunningHash, true); 
+        }
+        else if (isMovementPressed && isMovementBack)
+        {
+            _animator.SetBool(isRunningBackHash, true); 
+        }
+        if (!isMovementPressed && (isRunning || isRunningBack))
+        {
+            _animator.SetBool(isRunningHash, false);
+            _animator.SetBool(isRunningBackHash, false);
+        }
+        
+    }
     private void Update()
     {
+        handleAnimation();
         _characterController.Move(currentMovement * Time.deltaTime);
     }
     
