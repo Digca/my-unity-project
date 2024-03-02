@@ -5,6 +5,9 @@ using UnityEngine.InputSystem;
 
 public class AnimationAndMovementController : MonoBehaviour
 {
+    [SerializeField] private GameObject _objectToRotate;
+    [SerializeField] private float rotationSpeed;
+
     private PlayerInput _playerInput;
     private CharacterController _characterController;
     private Animator _animator;
@@ -18,16 +21,21 @@ public class AnimationAndMovementController : MonoBehaviour
 
     private bool isMovementPressed;
     private bool isMovementBack;
+
+    [SerializeField] private bool isRotated = false;
+    
     
     //gravity
     float groundedGravity = -.05f;
     float gravity = -1f;
+
+    [SerializeField] private float moveSpeed;
     
     //jumping
     private bool isJumpPressed = false;
     private float initialJumpVelocity;
-    private float maxJumpHeight = 2.0f;
-    private float maxJumpTime = .75f;
+    [SerializeField] private float maxJumpHeight = 2.0f;
+    [SerializeField] private float maxJumpTime = .75f;
     private bool isJumping = false;
     private void Awake()
     {
@@ -82,9 +90,15 @@ public class AnimationAndMovementController : MonoBehaviour
     private void onMovementInput(InputAction.CallbackContext context)
     {
         currentMovementInput = context.ReadValue<Vector2>();
-        currentMovement.x = currentMovementInput.x;
+        currentMovement.x = currentMovementInput.x * moveSpeed;
         isMovementPressed = currentMovementInput.x != 0;
-        isMovementBack = currentMovement.x < 0;
+        if (!isRotated)
+        {
+            isMovementBack = currentMovement.x < 0;
+        } else
+        {
+            isMovementBack = currentMovement.x < 0;
+        }
         
     }
     
@@ -106,6 +120,11 @@ public class AnimationAndMovementController : MonoBehaviour
             _animator.SetBool(isRunningHash, false);
             _animator.SetBool(isRunningBackHash, false);
         }
+        
+    }
+
+    private void handleRotation()
+    {
         
     }
 
