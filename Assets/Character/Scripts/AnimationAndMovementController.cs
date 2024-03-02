@@ -97,7 +97,7 @@ public class AnimationAndMovementController : MonoBehaviour
             isMovementBack = currentMovement.x < 0;
         } else
         {
-            isMovementBack = currentMovement.x < 0;
+            isMovementBack = currentMovement.x > 0;
         }
         
     }
